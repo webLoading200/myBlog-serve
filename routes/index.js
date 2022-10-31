@@ -9,7 +9,9 @@ router.post("/", async (ctx, next) => {
 });
 
 router.get("/string", async (ctx, next) => {
-  ctx.body = "koa2 string";
+	let data = await db("select * from user");
+	console.log(data)
+  ctx.body = data
 });
 
 router.post("/json", async (ctx, next) => {

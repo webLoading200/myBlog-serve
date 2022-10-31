@@ -10,6 +10,7 @@ const koaBody = require('koa-body');
 const index = require('./routes/index')
 const users = require('./routes/users')
 const upload = require('./routes/upload')
+const blog = require('./routes/blog')
 const path = require("path")
 // error handler
 onerror(app)
@@ -28,6 +29,7 @@ app.use(cors({
 	allowHeaders: ['*'], //设置服务器支持的所有头信息字段
 	exposeHeaders: ['*'] //设置获取其他自定义字段
 }))
+
 // middlewares
 app.use(bodyparser({
 	enableTypes: ['json', 'form', 'text']
@@ -40,8 +42,16 @@ app.use(views(__dirname + '/views', {
 	extension: 'pug'
 }))
 app.use(koaBody({
-	 multipart: true,
-}))
+	multipart: true,
+	formidable: {
+		//上传文件存储目录
+		uploadDir:  path.join(__dirname, `/public/uploads/`),
+		//允许保留后缀名
+		keepExtensions: true,
+		multipart: true,
+	}
+  })
+)
 // logger
 app.use(async (ctx, next) => {
 	const start = new Date()
@@ -54,7 +64,7 @@ app.use(async (ctx, next) => {
 app.use(index.routes(), index.allowedMethods())
 app.use(users.routes(), users.allowedMethods())
 app.use(upload.routes(), upload.allowedMethods())
-
+app.use(blog.routes(), blog.allowedMethods())
 // error-handling
 app.on('error', (err, ctx) => {
 	console.error('server error', err, ctx)
